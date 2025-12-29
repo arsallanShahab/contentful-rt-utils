@@ -1,0 +1,66 @@
+{
+  "name": "contentful-rt-utils",
+  "version": "1.0.0",
+  "description": "A robust, open-source TypeScript library to minify and convert Contentful Rich Text Documents.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "test": "vitest",
+    "lint": "eslint src/**/*.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arsallanShahab/contentful-rt-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arsallanShahab/contentful-rt-utils/issues"
+  },
+  "homepage": "https://github.com/arsallanShahab/contentful-rt-utils#readme",
+  "keywords": [
+    "contentful",
+    "rich-text",
+    "minify",
+    "typescript",
+    "nextjs",
+    "ssg",
+    "optimization",
+    "json-minifier",
+    "contentful-rich-text"
+  ],
+  "author": {
+    "name": "Arsallan Shahab",
+    "url": "https://github.com/arsallanShahab"
+  },
+  "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "tsup": "^8.0.0",
+    "vitest": "^1.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "dependencies": {
+    "@contentful/rich-text-types": "^16.0.0"
+  }
+}
