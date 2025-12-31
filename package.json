@@ -1,6 +1,6 @@
 {
   "name": "contentful-rt-utils",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A robust, open-source TypeScript library to minify and convert Contentful Rich Text Documents.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

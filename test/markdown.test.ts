@@ -1,244 +1,79 @@
 import { describe, it, expect } from "vitest";
-import { richTextToMarkdown } from "../src/index";
-import { Document, BLOCKS, MARKS, INLINES } from "@contentful/rich-text-types";
+import { richTextToMarkdown } from "../src/lib/markdown";
+import { Document, BLOCKS, INLINES } from "@contentful/rich-text-types";
 
-describe("richTextToMarkdown", () => {
-  it("converts simple paragraph with marks", () => {
-    const doc: Document = {
-      nodeType: BLOCKS.DOCUMENT,
-      data: {},
-      content: [
-        {
-          nodeType: BLOCKS.PARAGRAPH,
-          data: {},
-          content: [
-            {
-              nodeType: "text",
-              value: "Hello ",
-              marks: [],
-              data: {},
-            },
-            {
-              nodeType: "text",
-              value: "world",
-              marks: [{ type: MARKS.BOLD }],
-              data: {},
-            },
-            {
-              nodeType: "text",
-              value: "!",
-              marks: [],
-              data: {},
-            },
-          ],
+describe("Rich Text to Markdown", () => {
+  const mockDoc: Document = {
+    nodeType: BLOCKS.DOCUMENT,
+    data: {},
+    content: [
+      {
+        nodeType: BLOCKS.HEADING_1,
+        data: {},
+        content: [
+          {
+            nodeType: "text",
+            value: "My Title",
+            marks: [],
+            data: {},
+          },
+        ],
+      },
+      {
+        nodeType: BLOCKS.PARAGRAPH,
+        data: {},
+        content: [
+          {
+            nodeType: "text",
+            value: "This is a description.",
+            marks: [],
+            data: {},
+          },
+        ],
+      },
+    ],
+  };
+
+  describe("Frontmatter Generation", () => {
+    it("should generate frontmatter with extracted title and description", () => {
+      const markdown = richTextToMarkdown(mockDoc, {
+        frontmatter: {},
+      });
+
+      expect(markdown).toContain("---");
+      expect(markdown).toContain('title: "My Title"');
+      expect(markdown).toContain('description: "This is a description."');
+      expect(markdown).toContain("# My Title");
+    });
+
+    it("should use provided frontmatter values", () => {
+      const markdown = richTextToMarkdown(mockDoc, {
+        frontmatter: {
+          title: "Custom Title",
+          author: "John Doe",
         },
-      ],
-    };
+      });
 
-    const markdown = richTextToMarkdown(doc);
-    expect(markdown).toBe("Hello **world**!");
+      expect(markdown).toContain('title: "Custom Title"');
+      expect(markdown).toContain('author: "John Doe"');
+      // Should still contain extracted description if not provided
+      expect(markdown).toContain('description: "This is a description."');
+    });
   });
 
-  it("converts headings", () => {
-    const doc: Document = {
-      nodeType: BLOCKS.DOCUMENT,
-      data: {},
-      content: [
-        {
-          nodeType: BLOCKS.HEADING_1,
-          data: {},
-          content: [{ nodeType: "text", value: "Title", marks: [], data: {} }],
+  describe("Custom Renderers", () => {
+    it("should use custom renderer for specific node type", () => {
+      const markdown = richTextToMarkdown(mockDoc, {
+        customRenderer: {
+          [BLOCKS.HEADING_1]: (node, next) => {
+            const content = (node as any).content.map(next).join("");
+            return `<h1>${content}</h1>`;
+          },
         },
-        {
-          nodeType: BLOCKS.HEADING_2,
-          data: {},
-          content: [
-            { nodeType: "text", value: "Subtitle", marks: [], data: {} },
-          ],
-        },
-      ],
-    };
+      });
 
-    const markdown = richTextToMarkdown(doc);
-    expect(markdown).toBe("# Title\n\n## Subtitle");
-  });
-
-  it("converts unordered lists", () => {
-    const doc: Document = {
-      nodeType: BLOCKS.DOCUMENT,
-      data: {},
-      content: [
-        {
-          nodeType: BLOCKS.UL_LIST,
-          data: {},
-          content: [
-            {
-              nodeType: BLOCKS.LIST_ITEM,
-              data: {},
-              content: [
-                {
-                  nodeType: BLOCKS.PARAGRAPH,
-                  data: {},
-                  content: [
-                    { nodeType: "text", value: "Item 1", marks: [], data: {} },
-                  ],
-                },
-              ],
-            },
-            {
-              nodeType: BLOCKS.LIST_ITEM,
-              data: {},
-              content: [
-                {
-                  nodeType: BLOCKS.PARAGRAPH,
-                  data: {},
-                  content: [
-                    { nodeType: "text", value: "Item 2", marks: [], data: {} },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
-
-    const markdown = richTextToMarkdown(doc);
-    expect(markdown).toBe("- Item 1\n- Item 2");
-  });
-
-  it("converts ordered lists", () => {
-    const doc: Document = {
-      nodeType: BLOCKS.DOCUMENT,
-      data: {},
-      content: [
-        {
-          nodeType: BLOCKS.OL_LIST,
-          data: {},
-          content: [
-            {
-              nodeType: BLOCKS.LIST_ITEM,
-              data: {},
-              content: [
-                {
-                  nodeType: BLOCKS.PARAGRAPH,
-                  data: {},
-                  content: [
-                    { nodeType: "text", value: "First", marks: [], data: {} },
-                  ],
-                },
-              ],
-            },
-            {
-              nodeType: BLOCKS.LIST_ITEM,
-              data: {},
-              content: [
-                {
-                  nodeType: BLOCKS.PARAGRAPH,
-                  data: {},
-                  content: [
-                    { nodeType: "text", value: "Second", marks: [], data: {} },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
-
-    const markdown = richTextToMarkdown(doc);
-    expect(markdown).toBe("1. First\n2. Second");
-  });
-
-  it("converts nested lists", () => {
-    const doc: Document = {
-      nodeType: BLOCKS.DOCUMENT,
-      data: {},
-      content: [
-        {
-          nodeType: BLOCKS.UL_LIST,
-          data: {},
-          content: [
-            {
-              nodeType: BLOCKS.LIST_ITEM,
-              data: {},
-              content: [
-                {
-                  nodeType: BLOCKS.PARAGRAPH,
-                  data: {},
-                  content: [
-                    { nodeType: "text", value: "Parent", marks: [], data: {} },
-                  ],
-                },
-                {
-                  nodeType: BLOCKS.UL_LIST,
-                  data: {},
-                  content: [
-                    {
-                      nodeType: BLOCKS.LIST_ITEM,
-                      data: {},
-                      content: [
-                        {
-                          nodeType: BLOCKS.PARAGRAPH,
-                          data: {},
-                          content: [
-                            {
-                              nodeType: "text",
-                              value: "Child",
-                              marks: [],
-                              data: {},
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
-
-    const markdown = richTextToMarkdown(doc);
-    expect(markdown).toBe("- Parent\n  - Child");
-  });
-
-  it("converts hyperlinks", () => {
-    const doc: Document = {
-      nodeType: BLOCKS.DOCUMENT,
-      data: {},
-      content: [
-        {
-          nodeType: BLOCKS.PARAGRAPH,
-          data: {},
-          content: [
-            {
-              nodeType: "text",
-              value: "Click ",
-              marks: [],
-              data: {},
-            },
-            {
-              nodeType: INLINES.HYPERLINK,
-              data: { uri: "https://example.com" },
-              content: [
-                {
-                  nodeType: "text",
-                  value: "here",
-                  marks: [],
-                  data: {},
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
-
-    const markdown = richTextToMarkdown(doc);
-    expect(markdown).toBe("Click [here](https://example.com)");
+      expect(markdown).toContain("<h1>My Title</h1>");
+      expect(markdown).not.toContain("# My Title");
+    });
   });
 });

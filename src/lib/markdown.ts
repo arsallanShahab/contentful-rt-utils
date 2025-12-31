@@ -14,6 +14,14 @@ export type MarkdownOptions = {
   renderEntry?: (node: Block | Inline) => string;
   /** Custom renderer for embedded assets */
   renderAsset?: (node: Block | Inline) => string;
+  /** Custom renderer for specific node types */
+  customRenderer?: Record<string, (node: Node, next: (node: Node) => string) => string>;
+  /** Generate frontmatter */
+  frontmatter?: {
+    title?: string; // Static title or extracted from content
+    description?: string; // Static description or extracted from content
+    [key: string]: any; // Other frontmatter fields
+  };
 };
 
 /**
@@ -32,10 +40,53 @@ export function richTextToMarkdown(
     return "";
   }
 
-  return document.content
+  const markdown = document.content
     .map((node) => convertNode(node, options, 0))
     .filter((content) => content.trim() !== "")
     .join("\n\n");
+
+  if (options.frontmatter) {
+    const fm = generateFrontmatter(document, options.frontmatter);
+    return `---\n${fm}\n---\n\n${markdown}`;
+  }
+
+  return markdown;
+}
+
+function generateFrontmatter(document: Document, fmOptions: MarkdownOptions['frontmatter']): string {
+  if (!fmOptions) return "";
+
+  const frontmatter: Record<string, any> = { ...fmOptions };
+
+  // If title is not provided, try to extract from H1
+  if (!frontmatter.title) {
+    const h1 = document.content.find(node => node.nodeType === BLOCKS.HEADING_1);
+    if (h1) {
+      frontmatter.title = extractText(h1);
+    }
+  }
+
+  // If description is not provided, try to extract from first paragraph
+  if (!frontmatter.description) {
+    const p = document.content.find(node => node.nodeType === BLOCKS.PARAGRAPH);
+    if (p) {
+      frontmatter.description = extractText(p);
+    }
+  }
+
+  return Object.entries(frontmatter)
+    .map(([key, value]) => `${key}: ${JSON.stringify(value)}`) // Simple YAML-like format
+    .join("\n");
+}
+
+function extractText(node: Node): string {
+  if (node.nodeType === 'text') {
+    return (node as Text).value;
+  }
+  if ('content' in node && Array.isArray(node.content)) {
+    return node.content.map(extractText).join('');
+  }
+  return '';
 }
 
 /**
@@ -62,6 +113,10 @@ function convertNode(
   }
 
   try {
+    if (options.customRenderer && options.customRenderer[node.nodeType]) {
+      return options.customRenderer[node.nodeType](node, (n) => convertNode(n, options, depth));
+    }
+
     switch (node.nodeType) {
       case BLOCKS.PARAGRAPH:
         return processContent(node as Block, options, depth);

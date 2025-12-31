@@ -5,7 +5,10 @@ A robust, open-source TypeScript library to minify and convert Contentful Rich T
 ## Features
 
 - **Minification**: Removes unused metadata from Rich Text nodes.
-- **Markdown Conversion**: Converts Rich Text JSON to Markdown string.
+- **Markdown Conversion**: Converts Rich Text JSON to Markdown string with frontmatter support.
+- **Content Statistics**: Calculate reading time, word count, and extract links.
+- **Sanitization**: Remove empty nodes and strip unwanted formatting.
+- **Extraction**: Get all referenced Entry and Asset IDs.
 - **Configurable**: Specify exactly which fields to keep for embedded Entries and Assets.
 - **Custom Transformations**: Provide custom callbacks for advanced transformation logic.
 - **Type Safe**: Built with TypeScript and strict type definitions.
@@ -94,7 +97,56 @@ const markdown = richTextToMarkdown(document, {
   renderAsset: (node) =>
     `![${node.data.target.fields.title}](${node.data.target.fields.file.url})`,
   renderEntry: (node) => `[Embedded Entry: ${node.data.target.fields.title}]`,
+  // Generate frontmatter
+  frontmatter: {
+    author: "Arsallan",
+  },
+  // Custom renderer for specific nodes
+  customRenderer: {
+    [BLOCKS.EMBEDDED_ENTRY]: (node, next) => {
+      return `<div class="embed">${next(node)}</div>`;
+    }
+  }
 });
+```
+
+### Content Statistics
+
+```typescript
+import { getReadingTime, getWordCount, extractLinks } from 'contentful-rt-utils';
+
+// Calculate reading time (default 200 wpm)
+const minutes = getReadingTime(document);
+
+// Get accurate word count (excludes HTML/metadata and punctuation)
+const words = getWordCount(document);
+
+// Extract all external URLs
+const links = extractLinks(document);
+```
+
+### Sanitization & Cleanup
+
+```typescript
+import { removeEmptyNodes, stripMarks } from 'contentful-rt-utils';
+
+// Recursively remove empty paragraphs
+const cleanDoc = removeEmptyNodes(document);
+
+// Strip specific formatting marks (e.g., remove all bold text)
+const plainDoc = stripMarks(document, ['bold']);
+```
+
+### Extraction Utilities
+
+```typescript
+import { getLinkedEntries, getLinkedAssets } from 'contentful-rt-utils';
+
+// Get all referenced Entry IDs
+const entryIds = getLinkedEntries(document);
+
+// Get all referenced Asset IDs
+const assetIds = getLinkedAssets(document);
 ```
 
 ## API Reference
