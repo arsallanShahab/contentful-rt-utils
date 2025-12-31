@@ -1,6 +1,13 @@
 # 🚀 Changelog
 
 All notable changes to this project will be documented in this file.
+## [1.2.0](https://github.com/arsallanShahab/contentful-rt-utils/compare/v1.1.0...v1.2.0) (2025-12-31)
+
+
+### ✨ New Features
+
+* Add table generation utilities and plain text conversion; update README and release notes ([5ea2eb0](https://github.com/arsallanShahab/contentful-rt-utils/commit/5ea2eb01fe071a8586038080f9bd619f55ed2b90))
+
 ## [1.1.0](https://github.com/arsallanShahab/contentful-rt-utils/compare/v1.0.0...v1.1.0) (2025-12-31)
 
 
