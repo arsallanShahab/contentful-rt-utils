@@ -1,0 +1,58 @@
+{
+    "header": "# 🚀 Changelog\n\nAll notable changes to this project will be documented in this file.",
+    "types": [
+        {
+            "type": "feat",
+            "section": "✨ New Features"
+        },
+        {
+            "type": "fix",
+            "section": "🐛 Bug Fixes"
+        },
+        {
+            "type": "docs",
+            "section": "📚 Documentation"
+        },
+        {
+            "type": "style",
+            "section": "💎 Styles",
+            "hidden": false
+        },
+        {
+            "type": "refactor",
+            "section": "♻️ Code Refactoring"
+        },
+        {
+            "type": "perf",
+            "section": "⚡️ Performance Improvements"
+        },
+        {
+            "type": "test",
+            "section": "✅ Tests",
+            "hidden": false
+        },
+        {
+            "type": "build",
+            "section": "👷 Build System",
+            "hidden": false
+        },
+        {
+            "type": "ci",
+            "section": "🔧 CI/CD",
+            "hidden": false
+        },
+        {
+            "type": "chore",
+            "section": "🎫 Chores",
+            "hidden": true
+        },
+        {
+            "type": "revert",
+            "section": "⏪ Reverts"
+        }
+    ],
+    "commitUrlFormat": "{{host}}/{{owner}}/{{repository}}/commit/{{hash}}",
+    "compareUrlFormat": "{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
+    "issueUrlFormat": "{{host}}/{{owner}}/{{repository}}/issues/{{id}}",
+    "userUrlFormat": "{{host}}/{{user}}"
+}
