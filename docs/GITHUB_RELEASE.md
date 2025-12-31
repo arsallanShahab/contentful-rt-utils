@@ -1,24 +1,16 @@
-# Release v1.1.0
+# Release v1.2.0
 
 ## 🚀 New Features
 
-### Content Statistics
-- **`getReadingTime(document)`**: Calculate estimated reading time.
-- **`getWordCount(document)`**: Get accurate word count excluding HTML and metadata.
-- **`extractLinks(document)`**: Extract all external URLs from the document.
+### Plain Text Conversion
+- **`toPlainText(document, options)`**: Convert Rich Text to a plain text string. Useful for generating meta descriptions, search indices, or reading time estimates.
+  - Supports custom separators.
+  - Option to ignore link text.
 
-### Sanitization & Cleanup
-- **`removeEmptyNodes(document)`**: Recursively remove empty paragraphs that cause layout gaps.
-- **`stripMarks(document, marks)`**: Programmatically remove formatting marks (e.g., bold, italic).
-
-### Extraction Utilities
-- **`getLinkedEntries(document)`**: Get a list of all referenced Entry IDs.
-- **`getLinkedAssets(document)`**: Get a list of all referenced Asset IDs.
-
-### Markdown Enhancements
-- **Custom Renderers**: Support for custom rendering logic for specific node types.
-- **Frontmatter Generation**: Option to generate YAML frontmatter (title, description, etc.) along with the Markdown output.
+### Table Generation
+- **`createTable(data)`**: Programmatically create Contentful Rich Text Tables from 2D arrays.
+  - Automatically handles header rows.
+  - Simplifies table creation logic.
 
 ## 🛠 Improvements
-- Enhanced type definitions for better TypeScript support.
-- Improved robustness of Markdown conversion.
+- Added `toPlainText` and `createTable` to the public API exports.

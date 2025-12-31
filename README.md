@@ -8,6 +8,8 @@ A robust, open-source TypeScript library to minify and convert Contentful Rich T
 - **Markdown Conversion**: Converts Rich Text JSON to Markdown string with frontmatter support.
 - **Content Statistics**: Calculate reading time, word count, and extract links.
 - **Sanitization**: Remove empty nodes and strip unwanted formatting.
+- **Plain Text**: Convert Rich Text to plain text string.
+- **Table Generation**: Programmatically create Rich Text Tables from data arrays.
 - **Extraction**: Get all referenced Entry and Asset IDs.
 - **Configurable**: Specify exactly which fields to keep for embedded Entries and Assets.
 - **Custom Transformations**: Provide custom callbacks for advanced transformation logic.
@@ -149,6 +151,35 @@ const entryIds = getLinkedEntries(document);
 const assetIds = getLinkedAssets(document);
 ```
 
+### Plain Text Conversion
+
+```typescript
+import { toPlainText } from 'contentful-rt-utils';
+
+// Convert to plain text (default newline separator)
+const text = toPlainText(document);
+
+// Custom separator and ignore links
+const summary = toPlainText(document, { 
+  separator: ' ', 
+  ignoreLinks: true 
+});
+```
+
+### Table Generation
+
+```typescript
+import { createTable } from 'contentful-rt-utils';
+
+const data = [
+  ['Name', 'Role'], // First row becomes header
+  ['Alice', 'Admin'],
+  ['Bob', 'User']
+];
+
+const tableNode = createTable(data);
+```
+
 ## API Reference
 
 ### `minifyRichText(document, options?)`
@@ -180,6 +211,24 @@ Converts a Contentful Rich Text Document to a Markdown string.
 | :------------ | :---------------------------------- | :------------------------------------ |
 | `renderEntry` | `(node: Block \| Inline) => string` | Custom renderer for embedded entries. |
 | `renderAsset` | `(node: Block \| Inline) => string` | Custom renderer for embedded assets.  |
+
+### `toPlainText(document, options?)`
+
+Converts a Rich Text Document to a plain text string.
+
+- **document**: `Document | Node | null`
+- **options**: `PlainTextOptions`
+
+| Property      | Type      | Default | Description                                      |
+| :------------ | :-------- | :------ | :----------------------------------------------- |
+| `separator`   | `string`  | `\n`    | String to join blocks with.                      |
+| `ignoreLinks` | `boolean` | `false` | If true, excludes text content within hyperlinks. |
+
+### `createTable(data)`
+
+Creates a Rich Text Table node.
+
+- **data**: `string[][]` - 2D array of strings. First row is treated as header.
 
 ## Development
 

@@ -4,3 +4,5 @@ export * from "./lib/statistics";
 export * from "./lib/sanitization";
 export * from "./lib/extraction";
 export * from "./types";
+export * from "./lib/text";
+export * from "./lib/tables";
